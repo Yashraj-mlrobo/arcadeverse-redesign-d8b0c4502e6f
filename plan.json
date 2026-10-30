@@ -1,0 +1,308 @@
+{
+  "project_name": "arcadeverse-redesign",
+  "summary": "Complete visual overhaul of the Arcadeverse frontend to deliver a premium, immersive gaming platform UI inspired by modern game launchers while preserving all existing backend functionality.",
+  "requirements": [
+    "Create a premium gaming-inspired UI with deep midnight background, purple/blue gradients, neon cyan highlights, and cinematic typography.",
+    "Redesign the homepage with a sticky, transparent navbar, cinematic hero section featuring a game, and smooth hover/transition animations.",
+    "Redesign the featured games section using large horizontal cards with distinct color identities, hover reveal effects, and a smooth carousel.",
+    "Design a game library page resembling a digital store with search, categories, sophisticated grid layout, and animated game cards.",
+    "Redesign the player dashboard to showcase avatar, level, XP bar, stats, recent activity, and achievement badges with unlock animations.",
+    "Design a competitive leaderboard with a podium for top players, ranked list, and subtle ranking animations.",
+    "Redesign the gameplay screen surroundings to be minimal, with score/lives displays, pause/restart controls, and immersive overlays.",
+    "Implement animation system using Framer Motion for page transitions, hero entrance, staggered reveals, hover effects, parallax, and victory/achievement animations.",
+    "Add polished microinteractions for buttons, navigation, search field, sound toggle, profile menu, and loading screens.",
+    "Establish a consistent typography system (Space Grotesk, Inter, Sora, Orbitron) with clear hierarchy, spacing, and component dimensions.",
+    "Ensure full responsiveness across desktop, laptop, tablet, and mobile with dedicated mobile gaming experience.",
+    "Preserve all existing game logic and backend APIs; only modify frontend code.",
+    "Reuse existing components where appropriate and understand current routes and game integrations before changes."
+  ],
+  "assumptions": [
+    "Backend API follows the provided OpenAPI spec and remains unchanged.",
+    "Existing frontend is built with React, TypeScript, and Vite.",
+    "Game assets (artwork, avatars, icons) can be sourced or generated as placeholders.",
+    "Authentication uses JWT bearer tokens as defined in the API.",
+    "No breaking changes to game mechanics or backend database schema.",
+    "Framer Motion is available for animations; no additional animation libraries needed."
+  ],
+  "open_questions": [],
+  "technology_stack": [
+    "FastAPI",
+    "SQLite",
+    "React",
+    "TypeScript",
+    "Vite"
+  ],
+  "tasks": [
+    {
+      "task_id": "T1",
+      "title": "Implement user registration endpoint",
+      "description": "Create POST /api/register endpoint that accepts username and password, validates input, hashes password, stores user, and returns JWT token and username.",
+      "owner": "backend",
+      "endpoints": [
+        "POST /api/register"
+      ],
+      "dependencies": [],
+      "acceptance_checks": [
+        "Request with valid credentials returns 200 and JSON containing token and username.",
+        "Request with missing or invalid fields returns 400 with error message.",
+        "Request with duplicate username returns 400."
+      ],
+      "files_allowed": [
+        "backend/app/routes/auth.py",
+        "backend/app/models/user.py",
+        "backend/app/core/security.py"
+      ]
+    },
+    {
+      "task_id": "T2",
+      "title": "Implement login endpoint",
+      "description": "Create POST /api/login endpoint that verifies credentials and returns JWT token and username upon success.",
+      "owner": "backend",
+      "endpoints": [
+        "POST /api/login"
+      ],
+      "dependencies": [],
+      "acceptance_checks": [
+        "Valid credentials yield 200 with token and username.",
+        "Invalid credentials yield 401.",
+        "Missing fields yield 400."
+      ],
+      "files_allowed": [
+        "backend/app/routes/auth.py",
+        "backend/app/models/user.py",
+        "backend/app/core/security.py"
+      ]
+    },
+    {
+      "task_id": "T3",
+      "title": "Implement get games list endpoint",
+      "description": "Create GET /api/games endpoint returning array of game objects with id, title, genre, description, difficulty, artworkUrl.",
+      "owner": "backend",
+      "endpoints": [
+        "GET /api/games"
+      ],
+      "dependencies": [],
+      "acceptance_checks": [
+        "Request returns 200 with JSON array of game objects.",
+        "Each game includes required fields.",
+        "Empty database returns empty array."
+      ],
+      "files_allowed": [
+        "backend/app/routes/games.py",
+        "backend/app/models/game.py"
+      ]
+    },
+    {
+      "task_id": "T4",
+      "title": "Implement get game by ID endpoint",
+      "description": "Create GET /api/games/{id} endpoint returning a single game object or 404 if not found.",
+      "owner": "backend",
+      "endpoints": [
+        "GET /api/games/{id}"
+      ],
+      "dependencies": [],
+      "acceptance_checks": [
+        "Valid ID returns 200 with game object.",
+        "Invalid or non‑existent ID returns 404.",
+        "Response includes all required game fields."
+      ],
+      "files_allowed": [
+        "backend/app/routes/games.py",
+        "backend/app/models/game.py"
+      ]
+    },
+    {
+      "task_id": "T5",
+      "title": "Implement protected profile endpoint",
+      "description": "Create GET /api/profile endpoint secured with bearer token returning user profile data (id, username, avatarUrl, level, xp, xpToNext, achievementCount).",
+      "owner": "backend",
+      "endpoints": [
+        "GET /api/profile"
+      ],
+      "dependencies": [],
+      "acceptance_checks": [
+        "Valid token returns 200 with profile.",
+        "Missing or invalid token returns 401.",
+        "All required fields present."
+      ],
+      "files_allowed": [
+        "backend/app/routes/profile.py",
+        "backend/app/models/user.py",
+        "backend/app/core/security.py"
+      ]
+    },
+    {
+      "task_id": "T6",
+      "title": "Implement user achievements endpoint",
+      "description": "Create GET /api/achievements/me endpoint secured with bearer token returning array of achievement objects for the logged‑in user.",
+      "owner": "backend",
+      "endpoints": [
+        "GET /api/achievements/me"
+      ],
+      "dependencies": [],
+      "acceptance_checks": [
+        "Valid token returns 200 with array of achievement objects.",
+        "Each achievement contains id, name, description, iconUrl, unlockedAt.",
+        "Missing token returns 401."
+      ],
+      "files_allowed": [
+        "backend/app/routes/achievements.py",
+        "backend/app/models/achievement.py",
+        "backend/app/core/security.py"
+      ]
+    },
+    {
+      "task_id": "T7",
+      "title": "Implement leaderboard endpoint",
+      "description": "Create GET /api/leaderboard endpoint returning array of leaderboard entry objects (rank, username, avatarUrl, score, gamesPlayed).",
+      "owner": "backend",
+      "endpoints": [
+        "GET /api/leaderboard"
+      ],
+      "dependencies": [],
+      "acceptance_checks": [
+        "Request returns 200 with array sorted by score descending.",
+        "Each entry contains required fields.",
+        "Empty leaderboard returns empty array."
+      ],
+      "files_allowed": [
+        "backend/app/routes/leaderboard.py",
+        "backend/app/models/user.py"
+      ]
+    },
+    {
+      "task_id": "F1",
+      "title": "Build authentication UI (register/login pages)",
+      "description": "Create Register and Login pages with form controls calling POST /api/register and POST /api/login, handling token storage, and showing validation errors.",
+      "owner": "frontend",
+      "endpoints": [
+        "POST /api/register",
+        "POST /api/login"
+      ],
+      "dependencies": [],
+      "acceptance_checks": [
+        "Submitting valid registration redirects to login or home and stores token.",
+        "Submitting valid login stores token and navigates to home.",
+        "Form shows appropriate error messages for 400/401 responses.",
+        "Pages are responsive and use the defined typography and spacing."
+      ],
+      "files_allowed": [
+        "frontend/src/pages/Register.tsx",
+        "frontend/src/pages/Login.tsx",
+        "frontend/src/components/auth-form.tsx",
+        "frontend/src/hooks/useAuth.ts"
+      ]
+    },
+    {
+      "task_id": "F2",
+      "title": "Develop homepage with hero, navbar, and featured games carousel",
+      "description": "Implement sticky navbar with navigation items, logo, search, sound toggle, avatar, and menu. Create cinematic hero section with background artwork, gradient overlay, title, subtitle, CTAs, and parallax particles. Build a horizontal carousel of featured game cards using GET /api/games and GET /api/games/{id} for details, applying distinct color identities and hover reveal effects.",
+      "owner": "frontend",
+      "endpoints": [
+        "GET /api/games",
+        "GET /api/games/{id}"
+      ],
+      "dependencies": [],
+      "acceptance_checks": [
+        "Navbar is transparent/sticky, highlights active route, and collapses to hamburger on mobile.",
+        "Hero section displays artwork, readable text, and animates on entrance.",
+        "Featured games carousel renders at least five games with correct artwork, titles, genres, difficulty, and play button.",
+        "Hover on a game card triggers scale, lighting effect, and reveals additional info.",
+        "Carousel transitions are smooth and responsive.",
+        "Page uses prescribed colors, gradients, typography, and spacing."
+      ],
+      "files_allowed": [
+        "frontend/src/layout/Header.tsx",
+        "frontend/src/pages/Home.tsx",
+        "frontend/src/components/HeroSection.tsx",
+        "frontend/src/components/GameCarousel.tsx",
+        "frontend/src/components/GameCard.tsx",
+        "frontend/src/styles/theme.ts"
+      ]
+    },
+    {
+      "task_id": "F3",
+      "title": "Create player dashboard and profile views",
+      "description": "Build Profile page fetching GET /api/profile and GET /api/achievements/me. Display large avatar, username, level, XP progress bar, achievement count. Show statistics (games played, total score, games won, highest score) as compact stat blocks. List recent played games with scores and dates. Render achievement badges with unlock animations using Framer Motion.",
+      "owner": "frontend",
+      "endpoints": [
+        "GET /api/profile",
+        "GET /api/achievements/me"
+      ],
+      "dependencies": [],
+      "acceptance_checks": [
+        "Profile loads avatar, username, level, XP bar, and achievement count correctly.",
+        "Stat blocks show numeric values with appropriate labels.",
+        "Recent activity list shows game title, score, and date.",
+        "Achievement badges animate when unlocked (e.g., scale/pop).",
+        "Layout adapts to desktop and mobile views.",
+        "All text uses the specified font hierarchy and spacing."
+      ],
+      "files_allowed": [
+        "frontend/src/pages/Profile.tsx",
+        "frontend/src/components/ProfileHeader.tsx",
+        "frontend/src/components/StatBlock.tsx",
+        "frontend/src/components/RecentActivity.tsx",
+        "frontend/src/components/AchievementBadge.tsx",
+        "frontend/src/hooks/useProfile.ts"
+      ]
+    },
+    {
+      "task_id": "F4",
+      "title": "Implement library, leaderboard, and gameplay surround UI",
+      "description": "Construct Game Library page with search, category tabs, featured banner, and grid of game cards using GET /api/games. Implement Leaderboard page showing podium for top three, ranked list, avatars, scores, and highlight current player, fetching GET /api/leaderboard. Build minimal gameplay overlay showing title, score, lives, pause/restart, sound, and exit buttons, plus start/pause/victory/game-over screens using Framer Motion for transitions.",
+      "owner": "frontend",
+      "endpoints": [
+        "GET /api/games",
+        "GET /api/leaderboard"
+      ],
+      "dependencies": [],
+      "acceptance_checks": [
+        "Library page displays search bar that filters game grid in real time.",
+        "Grid shows game cards with artwork, title, genre, difficulty/rating, and play button.",
+        "Hover on library card scales artwork and reveals extra info.",
+        "Leaderboard shows podium with larger avatars for ranks 1‑3, and a list for others.",
+        "Current player's entry is visually highlighted.",
+        "Gameplay overlay is minimal, with controls accessible without obscuring the game area.",
+        "Start, pause, victory, and game‑over screens animate in/out smoothly.",
+        "All pages respect responsive breakpoints and maintain the visual style."
+      ],
+      "files_allowed": [
+        "frontend/src/pages/Library.tsx",
+        "frontend/src/pages/Leaderboard.tsx",
+        "frontend/src/components/GameGrid.tsx",
+        "frontend/src/components/GameCard.tsx",
+        "frontend/src/components/LeaderboardPodium.tsx",
+        "frontend/src/components/GameplayOverlay.tsx",
+        "frontend/src/components/StartScreen.tsx",
+        "frontend/src/components/PauseScreen.tsx",
+        "frontend/src/components/VictoryScreen.tsx",
+        "frontend/src/components/GameOverScreen.tsx",
+        "frontend/src/hooks/useGames.ts",
+        "frontend/src/hooks/useLeaderboard.ts"
+      ]
+    }
+  ],
+  "risks": [
+    "Over‑animation could harm frame rates on lower‑end devices; must test performance and limit heavy effects.",
+    "Responsive breakpoints may require extensive tweaking to ensure the gaming feel translates well to small touch screens.",
+    "Reliance on external game artwork could lead to missing assets; need placeholders or a fallback strategy.",
+    "Introducing Framer Motion may increase bundle size; should lazy‑load motion‑heavy components.",
+    "Changes to CSS/theme may inadvertently affect existing component styles; need visual regression testing."
+  ],
+  "parallel_groups": [
+    [
+      "T1",
+      "T2",
+      "T3",
+      "T4",
+      "T5",
+      "T6",
+      "T7",
+      "F1",
+      "F2",
+      "F3",
+      "F4"
+    ]
+  ]
+}

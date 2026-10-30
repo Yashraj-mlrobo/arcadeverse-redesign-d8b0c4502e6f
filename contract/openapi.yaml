@@ -1,0 +1,335 @@
+openapi: 3.1.0
+info:
+  title: Arcadeverse API
+  version: 1.0.0
+paths:
+  /api/register:
+    post:
+      summary: Register a new user
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Credentials'
+            examples:
+              example:
+                value:
+                  username: nova_player
+                  password: secret123
+      responses:
+        '200':
+          description: Registration successful
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AuthResponse'
+              examples:
+                example:
+                  value:
+                    token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
+                    username: nova_player
+        '400':
+          description: Validation error (e.g., username taken, weak password)
+  /api/login:
+    post:
+      summary: Log in an existing user
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Credentials'
+            examples:
+              example:
+                value:
+                  username: nova_player
+                  password: secret123
+      responses:
+        '200':
+          description: Login successful
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AuthResponse'
+              examples:
+                example:
+                  value:
+                    token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
+                    username: nova_player
+        '401':
+          description: Invalid credentials
+  /api/games:
+    get:
+      summary: Get list of all games
+      responses:
+        '200':
+          description: Array of game objects
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Game'
+              examples:
+                example:
+                  value:
+                  - id: 1
+                    title: Neon Snake
+                    genre: Arcade
+                    description: Guide the glowing snake through neon mazes.
+                    difficulty: Medium
+                    artworkUrl: /images/games/neon-snake.jpg
+  /api/games/{id}:
+    get:
+      summary: Get a single game by ID
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: integer
+          minimum: 1
+      responses:
+        '200':
+          description: Game object
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Game'
+              examples:
+                example:
+                  value:
+                    id: 2
+                    title: Brick Breaker
+                    genre: Arcade
+                    description: Break bricks with a bouncing ball.
+                    difficulty: Easy
+                    artworkUrl: /images/games/brick-breaker.jpg
+        '404':
+          description: Game not found
+  /api/profile:
+    get:
+      security:
+      - bearer: []
+      summary: Get authenticated user's profile
+      responses:
+        '200':
+          description: Profile data
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Profile'
+              examples:
+                example:
+                  value:
+                    id: 42
+                    username: nova_player
+                    avatarUrl: /images/avatars/nova.png
+                    level: 7
+                    xp: 3420
+                    xpToNext: 5000
+                    achievementCount: 12
+        '401':
+          description: Missing or invalid token
+  /api/achievements/me:
+    get:
+      security:
+      - bearer: []
+      summary: Get achievements for the current user
+      responses:
+        '200':
+          description: Array of achievement objects
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Achievement'
+              examples:
+                example:
+                  value:
+                  - id: 101
+                    name: First Win
+                    description: Won your first game.
+                    iconUrl: /images/achievements/first-win.png
+                    unlockedAt: '2024-09-01T10:30:00Z'
+        '401':
+          description: Missing or invalid token
+  /api/leaderboard:
+    get:
+      summary: Get leaderboard ranking
+      responses:
+        '200':
+          description: Array of leaderboard entries
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/LeaderboardEntry'
+              examples:
+                example:
+                  value:
+                  - rank: 1
+                    username: star_striker
+                    avatarUrl: /images/avatars/star.png
+                    score: 98750
+                    gamesPlayed: 124
+components:
+  securitySchemes:
+    bearer:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+  schemas:
+    Credentials:
+      type: object
+      required:
+      - username
+      - password
+      properties:
+        username:
+          type: string
+          minLength: 3
+          example: nova_player
+        password:
+          type: string
+          minLength: 6
+          example: secret123
+    AuthResponse:
+      type: object
+      required:
+      - token
+      - username
+      properties:
+        token:
+          type: string
+          example: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
+        username:
+          type: string
+          example: nova_player
+    Game:
+      type: object
+      required:
+      - id
+      - title
+      - genre
+      - description
+      - difficulty
+      - artworkUrl
+      properties:
+        id:
+          type: integer
+          example: 1
+        title:
+          type: string
+          example: Neon Snake
+        genre:
+          type: string
+          example: Arcade
+        description:
+          type: string
+          example: Guide the glowing snake through neon mazes.
+        difficulty:
+          type: string
+          enum:
+          - Easy
+          - Medium
+          - Hard
+          example: Medium
+        artworkUrl:
+          type: string
+          format: uri-reference
+          example: /images/games/neon-snake.jpg
+    Profile:
+      type: object
+      required:
+      - id
+      - username
+      - avatarUrl
+      - level
+      - xp
+      - xpToNext
+      - achievementCount
+      properties:
+        id:
+          type: integer
+          example: 42
+        username:
+          type: string
+          example: nova_player
+        avatarUrl:
+          type: string
+          format: uri-reference
+          example: /images/avatars/nova.png
+        level:
+          type: integer
+          minimum: 1
+          example: 7
+        xp:
+          type: integer
+          minimum: 0
+          example: 3420
+        xpToNext:
+          type: integer
+          minimum: 1
+          example: 5000
+        achievementCount:
+          type: integer
+          minimum: 0
+          example: 12
+    Achievement:
+      type: object
+      required:
+      - id
+      - name
+      - description
+      - iconUrl
+      - unlockedAt
+      properties:
+        id:
+          type: integer
+          example: 101
+        name:
+          type: string
+          example: First Win
+        description:
+          type: string
+          example: Won your first game.
+        iconUrl:
+          type: string
+          format: uri-reference
+          example: /images/achievements/first-win.png
+        unlockedAt:
+          type: string
+          format: date-time
+          example: '2024-09-01T10:30:00Z'
+    LeaderboardEntry:
+      type: object
+      required:
+      - rank
+      - username
+      - avatarUrl
+      - score
+      - gamesPlayed
+      properties:
+        rank:
+          type: integer
+          minimum: 1
+          example: 1
+        username:
+          type: string
+          example: star_striker
+        avatarUrl:
+          type: string
+          format: uri-reference
+          example: /images/avatars/star.png
+        score:
+          type: integer
+          minimum: 0
+          example: 98750
+        gamesPlayed:
+          type: integer
+          minimum: 0
+          example: 124

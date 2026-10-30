@@ -1,0 +1,169 @@
+[
+  {
+    "stage_id": "T1",
+    "agent": "backend",
+    "instructions": "Create POST /api/register endpoint that accepts username and password, validates input, hashes password, stores user, and returns JWT token and username.",
+    "contract_ref": "contract/openapi.yaml",
+    "files_allowed": [
+      "backend/app/routes/auth.py",
+      "backend/app/models/user.py",
+      "backend/app/core/security.py"
+    ],
+    "failed_attempts": 0,
+    "reviewer_failures": [],
+    "budget_context": {}
+  },
+  {
+    "stage_id": "T2",
+    "agent": "backend",
+    "instructions": "Create POST /api/login endpoint that verifies credentials and returns JWT token and username upon success.",
+    "contract_ref": "contract/openapi.yaml",
+    "files_allowed": [
+      "backend/app/routes/auth.py",
+      "backend/app/models/user.py",
+      "backend/app/core/security.py"
+    ],
+    "failed_attempts": 0,
+    "reviewer_failures": [],
+    "budget_context": {}
+  },
+  {
+    "stage_id": "T3",
+    "agent": "backend",
+    "instructions": "Create GET /api/games endpoint returning array of game objects with id, title, genre, description, difficulty, artworkUrl.",
+    "contract_ref": "contract/openapi.yaml",
+    "files_allowed": [
+      "backend/app/routes/games.py",
+      "backend/app/models/game.py"
+    ],
+    "failed_attempts": 0,
+    "reviewer_failures": [],
+    "budget_context": {}
+  },
+  {
+    "stage_id": "T4",
+    "agent": "backend",
+    "instructions": "Create GET /api/games/{id} endpoint returning a single game object or 404 if not found.",
+    "contract_ref": "contract/openapi.yaml",
+    "files_allowed": [
+      "backend/app/routes/games.py",
+      "backend/app/models/game.py"
+    ],
+    "failed_attempts": 0,
+    "reviewer_failures": [],
+    "budget_context": {}
+  },
+  {
+    "stage_id": "T5",
+    "agent": "backend",
+    "instructions": "Create GET /api/profile endpoint secured with bearer token returning user profile data (id, username, avatarUrl, level, xp, xpToNext, achievementCount).",
+    "contract_ref": "contract/openapi.yaml",
+    "files_allowed": [
+      "backend/app/routes/profile.py",
+      "backend/app/models/user.py",
+      "backend/app/core/security.py"
+    ],
+    "failed_attempts": 0,
+    "reviewer_failures": [],
+    "budget_context": {}
+  },
+  {
+    "stage_id": "T6",
+    "agent": "backend",
+    "instructions": "Create GET /api/achievements/me endpoint secured with bearer token returning array of achievement objects for the logged‑in user.",
+    "contract_ref": "contract/openapi.yaml",
+    "files_allowed": [
+      "backend/app/routes/achievements.py",
+      "backend/app/models/achievement.py",
+      "backend/app/core/security.py"
+    ],
+    "failed_attempts": 0,
+    "reviewer_failures": [],
+    "budget_context": {}
+  },
+  {
+    "stage_id": "T7",
+    "agent": "backend",
+    "instructions": "Create GET /api/leaderboard endpoint returning array of leaderboard entry objects (rank, username, avatarUrl, score, gamesPlayed).",
+    "contract_ref": "contract/openapi.yaml",
+    "files_allowed": [
+      "backend/app/routes/leaderboard.py",
+      "backend/app/models/user.py"
+    ],
+    "failed_attempts": 0,
+    "reviewer_failures": [],
+    "budget_context": {}
+  },
+  {
+    "stage_id": "F1",
+    "agent": "frontend",
+    "instructions": "Create Register and Login pages with form controls calling POST /api/register and POST /api/login, handling token storage, and showing validation errors.",
+    "contract_ref": "contract/openapi.yaml",
+    "files_allowed": [
+      "frontend/src/pages/Register.tsx",
+      "frontend/src/pages/Login.tsx",
+      "frontend/src/components/auth-form.tsx",
+      "frontend/src/hooks/useAuth.ts"
+    ],
+    "failed_attempts": 0,
+    "reviewer_failures": [],
+    "budget_context": {}
+  },
+  {
+    "stage_id": "F2",
+    "agent": "frontend",
+    "instructions": "Implement sticky navbar with navigation items, logo, search, sound toggle, avatar, and menu. Create cinematic hero section with background artwork, gradient overlay, title, subtitle, CTAs, and parallax particles. Build a horizontal carousel of featured game cards using GET /api/games and GET /api/games/{id} for details, applying distinct color identities and hover reveal effects.",
+    "contract_ref": "contract/openapi.yaml",
+    "files_allowed": [
+      "frontend/src/layout/Header.tsx",
+      "frontend/src/pages/Home.tsx",
+      "frontend/src/components/HeroSection.tsx",
+      "frontend/src/components/GameCarousel.tsx",
+      "frontend/src/components/GameCard.tsx",
+      "frontend/src/styles/theme.ts"
+    ],
+    "failed_attempts": 0,
+    "reviewer_failures": [],
+    "budget_context": {}
+  },
+  {
+    "stage_id": "F3",
+    "agent": "frontend",
+    "instructions": "Build Profile page fetching GET /api/profile and GET /api/achievements/me. Display large avatar, username, level, XP progress bar, achievement count. Show statistics (games played, total score, games won, highest score) as compact stat blocks. List recent played games with scores and dates. Render achievement badges with unlock animations using Framer Motion.",
+    "contract_ref": "contract/openapi.yaml",
+    "files_allowed": [
+      "frontend/src/pages/Profile.tsx",
+      "frontend/src/components/ProfileHeader.tsx",
+      "frontend/src/components/StatBlock.tsx",
+      "frontend/src/components/RecentActivity.tsx",
+      "frontend/src/components/AchievementBadge.tsx",
+      "frontend/src/hooks/useProfile.ts"
+    ],
+    "failed_attempts": 0,
+    "reviewer_failures": [],
+    "budget_context": {}
+  },
+  {
+    "stage_id": "F4",
+    "agent": "frontend",
+    "instructions": "Construct Game Library page with search, category tabs, featured banner, and grid of game cards using GET /api/games. Implement Leaderboard page showing podium for top three, ranked list, avatars, scores, and highlight current player, fetching GET /api/leaderboard. Build minimal gameplay overlay showing title, score, lives, pause/restart, sound, and exit buttons, plus start/pause/victory/game-over screens using Framer Motion for transitions.",
+    "contract_ref": "contract/openapi.yaml",
+    "files_allowed": [
+      "frontend/src/pages/Library.tsx",
+      "frontend/src/pages/Leaderboard.tsx",
+      "frontend/src/components/GameGrid.tsx",
+      "frontend/src/components/GameCard.tsx",
+      "frontend/src/components/LeaderboardPodium.tsx",
+      "frontend/src/components/GameplayOverlay.tsx",
+      "frontend/src/components/StartScreen.tsx",
+      "frontend/src/components/PauseScreen.tsx",
+      "frontend/src/components/VictoryScreen.tsx",
+      "frontend/src/components/GameOverScreen.tsx",
+      "frontend/src/hooks/useGames.ts",
+      "frontend/src/hooks/useLeaderboard.ts"
+    ],
+    "failed_attempts": 0,
+    "reviewer_failures": [],
+    "budget_context": {}
+  }
+]
